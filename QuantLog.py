@@ -23,10 +23,11 @@ def quantlogistic(w,xTr,yTr,num_bins, type, scale):
     y_pred = w.T @ xTr
     vals = yTr * y_pred
     #keeping same loss function as for normal log loss?
-    loss = np.mean(np.log(1 + np.exp(-vals)))
-
+    # loss = np.mean(np.log(1 + np.exp(-vals)))
+    loss = np.mean(np.logaddexp(0, -vals))
     # take sigmoid of vals
 
+    # add some condition to avoid overflow
     func = lambda x: 1/(1+np.exp(x))
     func = np.vectorize(func)
     vals = func(vals)

@@ -12,7 +12,11 @@ from sklearn.model_selection import train_test_split
 def test_loss(w,X,y):
     #calculates test loss
     log_odds = np.dot(w.T, X)
-    probs = 1 / (1 + np.exp(-log_odds))
+    #change place
+    exp_values = np.exp(-np.clip(log_odds, -500, 500))
+    
+    probs = 1 / (1 + exp_values)
+    
     preds = (probs > 0.5).astype(int)
     preds = np.where(preds == 0, -1, preds)
     test_loss = np.sum(preds != y) / len(y)
@@ -42,7 +46,7 @@ def experiment(X,y):
                 loss_grid = np.zeros((len(w_level),len(q_level)))
                 for i, level_w in enumerate(w_level):
                     for j, level_q in enumerate(q_level):
-                        w, iters = grdescentquant(func, w0, 0.1, 1000, X, y, level_w, level_q, type_w, type_q, scale,tolerance=1e-02)
+                        w, iters = grdescentquant(func, w0, 0.1, 10, X, y, level_w, level_q, type_w, type_q, scale,tolerance=1e-02)
                         loss = test_loss(w,X,y)
                         loss_grid[i,j] = loss
                 xlabel = "gradient lvl"
